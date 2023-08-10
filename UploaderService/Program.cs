@@ -12,49 +12,81 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 class Program
 {
     public static List<byte[]> generatedBytes = new List<byte[]>();
+    public static ConcurrentBag<Task> uploadTasks = new ConcurrentBag<Task>();
 
     static async Task Main(string[] args)
     {
         string accessKey = "oDvlANSpdkreqwpo";
         string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
         string bucketName = "dev";
-        int numFiles = 500;
+        int numFiles = 100;
         int minFileSize = 1024; // 1KB
         int maxFileSize = 102400; // 100KB
 
         AmazonS3Config cfg = new AmazonS3Config { ServiceURL = "https://s3.tebi.io" };
         AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, cfg);
 
-        ConcurrentBag<Task> uploadTasks = new ConcurrentBag<Task>();
 
+        var watch2 = new System.Diagnostics.Stopwatch();
+
+        watch2.Start();
+
+        uploadTasks.Add(Monitor());
+
+        while (true)
+        {
+            watch2.Start();
+
+            Parallel.ForEach(
+                Enumerable.Range(0, numFiles),
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+                number =>
+                {
+                    string key = $"file{number}_{Guid.NewGuid()}.dat";
+                    byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
+                    PutObjectRequest request = new PutObjectRequest
+                    {
+                        BucketName = bucketName,
+                        Key = key,
+                        InputStream = new MemoryStream(fileBytes)
+                    };
+                    Task uploadTask = s3Client.PutObjectAsync(request);
+                    uploadTasks.Add(uploadTask);
+                });
+
+            //await Task.WhenAll(uploadTasks);
+
+            watch2.Stop();
+
+            if (1000 - watch2.ElapsedMilliseconds > 0)
+            {
+                await Task.Delay(1000 - (int)watch2.ElapsedMilliseconds);
+            }
+
+            //Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+        }
+        
+
+        //Console.WriteLine("All files uploaded to S3.");
+    }
+
+    public static async Task Monitor()
+    {
         var watch = new System.Diagnostics.Stopwatch();
-
         watch.Start();
 
-        Parallel.ForEach(
-            Enumerable.Range(0, numFiles),
-            new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
-            number =>
-            {
-                string key = $"file{number}.dat";
-                byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-                PutObjectRequest request = new PutObjectRequest
-                {
-                    BucketName = bucketName,
-                    Key = key,
-                    InputStream = new MemoryStream(fileBytes)
-                };
-                Task uploadTask = s3Client.PutObjectAsync(request);
-                uploadTasks.Add(uploadTask);
-            });
+        while (true)
+        {
+            var countCompleted = uploadTasks.Count(x => x.IsCompletedSuccessfully);
+            var countAll = uploadTasks.Count() - 1;
 
-        await Task.WhenAll(uploadTasks);
+            var cfps = countCompleted / (watch.ElapsedMilliseconds / 1000);
+            var fps = countAll / (watch.ElapsedMilliseconds / 1000);
 
-        watch.Stop();
+            Console.WriteLine($"{watch.ElapsedMilliseconds} ms! {fps} requests per second / {cfps} completed files per second");
 
-        Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
-
-        Console.WriteLine("All files uploaded to S3.");
+            await Task.Delay(1000);
+        }
     }
 
     static byte[] GenerateRandomFile(int minSize, int maxSize)

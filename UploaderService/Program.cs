@@ -61,7 +61,7 @@ class Program
                 new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
                 number =>
                 {
-                    string key = $"file{number}.dat";
+                    string key = $"file{number}_{Guid.NewGuid()}.dat";
                     byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
                     var content = new StreamContent(new MemoryStream(fileBytes));
                     Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content);

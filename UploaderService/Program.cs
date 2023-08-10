@@ -34,21 +34,10 @@ class Program
     {
         string accessKey = "oDvlANSpdkreqwpo";
         string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
-        string bucketName = "dev";
+        string bucketName = "dev2";
         int numFiles = 1000;
         int minFileSize = 1024; // 1KB
         int maxFileSize = 102400; // 100KB
-
-        //var svc = new ServiceCollection();
-
-        //svc.AddHttpClient("tabi", config =>
-        //{
-        //    config.DefaultRequestHeaders.Add("Authorization", $"TB-PLAIN {accessKey}:{secretKey}");
-        //});
-
-        //var serviceProvider = svc.BuildServiceProvider();
-
-        //var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
 
         AmazonS3Config cfg = new AmazonS3Config { ServiceURL = "https://s3.tebi.io" };
         AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, cfg);
@@ -56,30 +45,8 @@ class Program
         uploadTasks.Add(Monitor());
 
         string url = $"https://{bucketName}.s3.tebi.io/";
-        //string date = DateTime.UtcNow.ToString("yyyyMMddTHHmmssZ");
-        //string amzDate = date.Substring(0, 8);
-        //string signature = OneTimeHmac(accessKey, secretKey, date, "eu", bucketName, "test");
-
-        //httpClient.DefaultRequestHeaders.Add("x-amz-date", date);
-        //httpClient.DefaultRequestHeaders.Add("x-amz-content-sha256", "UNSIGNED-PAYLOAD");
-        //httpClient.DefaultRequestHeaders.Add("Authorization", $"AWS4-HMAC-SHA256 Credential={accessKey}/{amzDate}/eu/s3/aws4_request, SignedHeaders=host;x-amz-date, Signature={signature}");
-
-        //UTF8Encoding encoding = new UTF8Encoding();
-        //HMACSHA256 hmac = new HMACSHA256(encoding.GetBytes(secretKey));
-        //string signature = Convert.ToBase64String(hmac.ComputeHash(encoding.GetBytes(tosign)));
-
-        //var query = Uri.EscapeDataString(signature);
-
-        //var watch3 = new System.Diagnostics.Stopwatch();
-        //watch3.Start();
-        //var test = GeneratePreSignedURL(s3Client, bucketName, "test", 1000);
-        //Console.WriteLine($"1 {watch3.ElapsedMilliseconds}");
 
         httpClient.DefaultRequestHeaders.Add("Authorization", $"TB-PLAIN {accessKey}:{secretKey}");
-
-        //string key = $"file.dat";
-        //byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-        //var t = await httpClient.PutAsync($"https://dev.s3.tebi.io/test", new StreamContent(new MemoryStream(fileBytes)));
 
         while (true)
         {
@@ -94,20 +61,11 @@ class Program
                 new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
                 number =>
                 {
-                    //Console.WriteLine($"1 {watch2.ElapsedMilliseconds}");
                     string key = $"file{number}.dat";
-                    //Console.WriteLine($"2 {watch2.ElapsedMilliseconds}");
                     byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-                    //Console.WriteLine($"3 {watch2.ElapsedMilliseconds}");
                     var content = new StreamContent(new MemoryStream(fileBytes));
-                    //Console.WriteLine($"4 {watch2.ElapsedMilliseconds}");
                     Task uploadTask = httpClient.PutAsync($"https://dev.s3.tebi.io/{key}", content);
-                    //Task uploadTask = s3Client.PutObjectAsync(request);
-                    //Task uploadTask = httpClient.PutAsync(request);
-                    //var test = await uploadTask;
-                    //Console.WriteLine($"5 {watch2.ElapsedMilliseconds}");
                     uploadTasks.Add(uploadTask);
-                    //Console.WriteLine($"6 {watch2.ElapsedMilliseconds}");
                 });
 
             //await Task.WhenAll(uploadTasks);

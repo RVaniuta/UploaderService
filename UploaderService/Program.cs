@@ -77,6 +77,8 @@ class Program
 
         while (true)
         {
+            await Task.Delay(1000);
+
             var countCompleted = uploadTasks.Count(x => x.IsCompletedSuccessfully);
             var countAll = uploadTasks.Count() - 1;
 
@@ -84,8 +86,6 @@ class Program
             var fps = countAll / (watch.ElapsedMilliseconds / 1000);
 
             Console.WriteLine($"{watch.ElapsedMilliseconds} ms! {fps} requests per second / {cfps} completed files per second");
-
-            await Task.Delay(1000);
         }
     }
 

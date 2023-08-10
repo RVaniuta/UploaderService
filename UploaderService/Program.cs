@@ -39,16 +39,16 @@ class Program
         int minFileSize = 1024; // 1KB
         int maxFileSize = 102400; // 100KB
 
-        var svc = new ServiceCollection();
+        //var svc = new ServiceCollection();
 
-        svc.AddHttpClient("tabi", config =>
-        {
-            config.DefaultRequestHeaders.Add("Authorization", $"TB-PLAIN {accessKey}:{secretKey}");
-        });
+        //svc.AddHttpClient("tabi", config =>
+        //{
+        //    config.DefaultRequestHeaders.Add("Authorization", $"TB-PLAIN {accessKey}:{secretKey}");
+        //});
 
-        var serviceProvider = svc.BuildServiceProvider();
+        //var serviceProvider = svc.BuildServiceProvider();
 
-        var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
+        //var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
 
         AmazonS3Config cfg = new AmazonS3Config { ServiceURL = "https://s3.tebi.io" };
         AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, cfg);
@@ -86,7 +86,7 @@ class Program
             var watch2 = new System.Diagnostics.Stopwatch();
             watch2.Start();
 
-            var client = httpClientFactory.CreateClient("tabi");
+            //var client = httpClientFactory.CreateClient("tabi");
 
 
             Parallel.ForEach(
@@ -101,7 +101,7 @@ class Program
                     //Console.WriteLine($"3 {watch2.ElapsedMilliseconds}");
                     var content = new StreamContent(new MemoryStream(fileBytes));
                     //Console.WriteLine($"4 {watch2.ElapsedMilliseconds}");
-                    Task uploadTask = client.PutAsync($"https://dev.s3.tebi.io/{key}", content);
+                    Task uploadTask = httpClient.PutAsync($"https://dev.s3.tebi.io/{key}", content);
                     //Task uploadTask = s3Client.PutObjectAsync(request);
                     //Task uploadTask = httpClient.PutAsync(request);
                     //var test = await uploadTask;

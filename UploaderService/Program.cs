@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 class Program
 {
@@ -29,18 +31,22 @@ class Program
 
         watch.Start();
 
-        Parallel.For(1, numFiles, number => {
-            string key = $"file{number}.dat";
-            byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-            PutObjectRequest request = new PutObjectRequest
+        Parallel.ForEach(
+            Enumerable.Range(0, numFiles),
+            new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+            number =>
             {
-                BucketName = bucketName,
-                Key = key,
-                InputStream = new MemoryStream(fileBytes)
-            };
-            Task uploadTask = s3Client.PutObjectAsync(request);
-            uploadTasks.Add(uploadTask);
-        });
+                string key = $"file{number}.dat";
+                byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
+                PutObjectRequest request = new PutObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = key,
+                    InputStream = new MemoryStream(fileBytes)
+                };
+                Task uploadTask = s3Client.PutObjectAsync(request);
+                uploadTasks.Add(uploadTask);
+            });
 
         await Task.WhenAll(uploadTasks);
 

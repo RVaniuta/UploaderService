@@ -46,6 +46,8 @@ class Program
             using TcpClient handler = await listener.AcceptTcpClientAsync();
             await using NetworkStream stream = handler.GetStream();
 
+            Console.WriteLine("Connected");
+
             int i;
 
             // Loop to receive all the data sent by the client.

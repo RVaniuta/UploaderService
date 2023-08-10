@@ -35,7 +35,7 @@ class Program
         string accessKey = "oDvlANSpdkreqwpo";
         string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
         string bucketName = "dev";
-        int numFiles = 500;
+        int numFiles = 1000;
         int minFileSize = 1024; // 1KB
         int maxFileSize = 102400; // 100KB
 

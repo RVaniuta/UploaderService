@@ -92,7 +92,7 @@ class Program
             Parallel.ForEach(
                 Enumerable.Range(0, numFiles),
                 new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
-                async number =>
+                number =>
                 {
                     //Console.WriteLine($"1 {watch2.ElapsedMilliseconds}");
                     string key = $"file{number}.dat";

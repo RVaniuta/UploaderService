@@ -19,22 +19,18 @@ class Program
         string accessKey = "oDvlANSpdkreqwpo";
         string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
         string bucketName = "dev";
-        int numFiles = 100;
+        int numFiles = 500;
         int minFileSize = 1024; // 1KB
         int maxFileSize = 102400; // 100KB
 
         AmazonS3Config cfg = new AmazonS3Config { ServiceURL = "https://s3.tebi.io" };
         AmazonS3Client s3Client = new AmazonS3Client(accessKey, secretKey, cfg);
 
-
-        var watch2 = new System.Diagnostics.Stopwatch();
-
-        watch2.Start();
-
         uploadTasks.Add(Monitor());
 
         while (true)
         {
+            var watch2 = new System.Diagnostics.Stopwatch();
             watch2.Start();
 
             Parallel.ForEach(

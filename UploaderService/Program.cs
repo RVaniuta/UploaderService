@@ -30,8 +30,15 @@ class Program
         watch.Start();
 
         Parallel.For(1, numFiles, number => {
+            string key = $"file{number}.dat";
             byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-            Task uploadTask = UploadFileToS3Async(s3Client, bucketName, fileBytes, number);
+            PutObjectRequest request = new PutObjectRequest
+            {
+                BucketName = bucketName,
+                Key = key,
+                InputStream = new MemoryStream(fileBytes)
+            };
+            Task uploadTask = s3Client.PutObjectAsync(request);
             uploadTasks.Add(uploadTask);
         });
 
@@ -42,27 +49,6 @@ class Program
         Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
         Console.WriteLine("All files uploaded to S3.");
-    }
-
-    static async Task UploadFileToS3Async(AmazonS3Client s3Client, string bucketName, byte[] fileBytes, int index)
-    {
-        string key = $"file{index}.dat";
-
-        PutObjectRequest request = new PutObjectRequest
-        {
-            BucketName = bucketName,
-            Key = key,
-            InputStream = new MemoryStream(fileBytes)
-        };
-
-        try
-        {
-            await s3Client.PutObjectAsync(request);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            Console.WriteLine($"Error uploading file {key}: {ex.Message}");
-        }
     }
 
     static byte[] GenerateRandomFile(int minSize, int maxSize)

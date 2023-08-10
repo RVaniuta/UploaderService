@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -32,6 +33,47 @@ class Program
 
     static async Task Main(string[] args)
     {
+        Byte[] bytes = new Byte[256];
+        string data = null;
+
+        var ipEndPoint = new IPEndPoint(IPAddress.Any, 1337);
+        TcpListener listener = new(ipEndPoint);
+
+        try
+        {
+            listener.Start();
+
+            using TcpClient handler = await listener.AcceptTcpClientAsync();
+            await using NetworkStream stream = handler.GetStream();
+
+            int i;
+
+            // Loop to receive all the data sent by the client.
+            while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+            {
+                // Translate data bytes to a ASCII string.
+                data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                Console.WriteLine("Received: {0}", data);
+
+                // Process the data sent by the client.
+                data = data.ToUpper();
+
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+
+                // Send back a response.
+                stream.Write(msg, 0, msg.Length);
+                Console.WriteLine("Sent: {0}", data);
+            }
+        }
+        finally
+        {
+            listener.Stop();
+        }
+
+        Console.ReadKey();
+        listener.Stop();
+        return;
+
         string accessKey = "oDvlANSpdkreqwpo";
         string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
         string bucketName = "dev2";

@@ -64,7 +64,7 @@ class Program
                     string key = $"file{number}.dat";
                     byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
                     var content = new StreamContent(new MemoryStream(fileBytes));
-                    Task uploadTask = httpClient.PutAsync($"https://dev.s3.tebi.io/{key}", content);
+                    Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content);
                     uploadTasks.Add(uploadTask);
                 });
 

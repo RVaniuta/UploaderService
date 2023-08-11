@@ -37,7 +37,9 @@ class Program
     {
         PooledConnectionLifetime = TimeSpan.FromMinutes(60),
         PooledConnectionIdleTimeout = TimeSpan.FromMinutes(20),
-        MaxConnectionsPerServer = 1000
+        MaxConnectionsPerServer = 10000,
+        KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always,
+        EnableMultipleHttp2Connections = true
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
 
@@ -69,7 +71,7 @@ class Program
             {
                 Parallel.ForEach(
                 Enumerable.Range(0, numFiles),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10 },
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10, CancellationToken = _cancellationToken.Value },
                 number =>
                 {
                     string key = $"file{number}_{Guid.NewGuid()}.dat";

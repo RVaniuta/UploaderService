@@ -69,7 +69,7 @@ class Program
             {
                 Parallel.ForEach(
                 Enumerable.Range(0, numFiles),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10 },
                 number =>
                 {
                     string key = $"file{number}_{Guid.NewGuid()}.dat";

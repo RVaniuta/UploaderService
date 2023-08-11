@@ -43,10 +43,6 @@ class Program
         
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
-    public static HttpClient httpClient2 = new HttpClient(socketsHttpHandler);
-    public static HttpClient httpClient3 = new HttpClient(socketsHttpHandler);
-    public static HttpClient httpClient4 = new HttpClient(socketsHttpHandler);
-    public static HttpClient httpClient5 = new HttpClient(socketsHttpHandler);
 
     public static int numFiles = 0;
 
@@ -76,8 +72,8 @@ class Program
             if (_cancellationToken != null && !_cancellationToken.Value.IsCancellationRequested)
             {
                 Parallel.ForEach(
-                Enumerable.Range(0, numFiles / 5),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10, CancellationToken = _cancellationToken.Value },
+                Enumerable.Range(0, numFiles),
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _cancellationToken.Value },
                 number =>
                 {
                     string key = $"file{number}_{Guid.NewGuid()}.dat";
@@ -85,30 +81,6 @@ class Program
                     var content = new StreamContent(new MemoryStream(fileBytes));
                     Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content, _cancellationToken.Value);
                     uploadTasks.Add(uploadTask);
-
-                    key = $"file{number}_{Guid.NewGuid()}.dat";
-                    fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-                    content = new StreamContent(new MemoryStream(fileBytes));
-                    Task uploadTask2 = httpClient2.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content, _cancellationToken.Value);
-                    uploadTasks.Add(uploadTask2);
-
-                    key = $"file{number}_{Guid.NewGuid()}.dat";
-                    fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-                    content = new StreamContent(new MemoryStream(fileBytes));
-                    Task uploadTask3 = httpClient3.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content, _cancellationToken.Value);
-                    uploadTasks.Add(uploadTask2);
-
-                    key = $"file{number}_{Guid.NewGuid()}.dat";
-                    fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-                    content = new StreamContent(new MemoryStream(fileBytes));
-                    Task uploadTask4 = httpClient4.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content, _cancellationToken.Value);
-                    uploadTasks.Add(uploadTask2);
-
-                    key = $"file{number}_{Guid.NewGuid()}.dat";
-                    fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-                    content = new StreamContent(new MemoryStream(fileBytes));
-                    Task uploadTask5 = httpClient5.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content, _cancellationToken.Value);
-                    uploadTasks.Add(uploadTask2);
                 });
             }
 

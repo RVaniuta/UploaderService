@@ -102,14 +102,11 @@ class Program
             
             try
             {
-                Console.WriteLine("Monitor waiting");
                 TcpClient handler = await listener.AcceptTcpClientAsync();
                 await using NetworkStream stream = handler.GetStream();
 
-                Console.WriteLine("Monitor connected");
 
-
-                if (watch != null && watch.IsRunning)
+                if (true)
                 {
                     var countCompleted = uploadTasks.Count(x => x.IsCompletedSuccessfully);
                     var countAll = uploadTasks.Count();

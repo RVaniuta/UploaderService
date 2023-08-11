@@ -5,7 +5,8 @@ using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Newtonsoft.Json;
 
-var json = JsonConvert.SerializeObject(new { fps = 0, cfps = 0, totalRequests = 0, totalCompleted = 0 });
+var watch = new System.Diagnostics.Stopwatch();
+var t = watch.ElapsedMilliseconds;
 
 Console.ReadLine();
 

@@ -72,36 +72,37 @@
             startAt.AutoSize = true;
             startAt.Location = new Point(662, 26);
             startAt.Name = "startAt";
-            startAt.Size = new Size(78, 32);
+            startAt.Size = new Size(79, 32);
             startAt.TabIndex = 4;
-            startAt.Text = "label2";
+            startAt.Text = "START";
             // 
             // endAt
             // 
             endAt.AutoSize = true;
-            endAt.Location = new Point(666, 71);
+            endAt.Location = new Point(662, 71);
             endAt.Name = "endAt";
-            endAt.Size = new Size(78, 32);
+            endAt.Size = new Size(61, 32);
             endAt.TabIndex = 5;
-            endAt.Text = "label2";
+            endAt.Text = "END";
+            endAt.Click += endAt_Click;
             // 
             // totalR
             // 
             totalR.AutoSize = true;
             totalR.Location = new Point(1054, 28);
             totalR.Name = "totalR";
-            totalR.Size = new Size(78, 32);
+            totalR.Size = new Size(27, 32);
             totalR.TabIndex = 6;
-            totalR.Text = "label2";
+            totalR.Text = "0";
             // 
             // totalU
             // 
             totalU.AutoSize = true;
-            totalU.Location = new Point(1061, 70);
+            totalU.Location = new Point(1054, 71);
             totalU.Name = "totalU";
-            totalU.Size = new Size(78, 32);
+            totalU.Size = new Size(27, 32);
             totalU.TabIndex = 7;
-            totalU.Text = "label2";
+            totalU.Text = "0";
             // 
             // Form1
             // 

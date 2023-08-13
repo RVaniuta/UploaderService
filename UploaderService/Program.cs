@@ -52,6 +52,10 @@ class Program
 
     public static Random random = new Random();
 
+    public static int totalReqests = 0;
+    public static int SuccessRequests = 0;
+    public static int FailedRequests = 0;
+
     static async Task Main(string[] args)
     {
         string accessKey = "oDvlANSpdkreqwpo";
@@ -86,11 +90,13 @@ class Program
                 new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10/*, CancellationToken = _cancellationToken.Value*/ },
                 number =>
                 {
-                    string key = $"file{number}_{Guid.NewGuid()}.dat";
-                    var ran = random.Next(0, 99);
-                    var content = new StreamContent(new MemoryStream(filesBytes[ran]));
-                    Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content/*, _cancellationToken.Value*/);
-                    uploadTasks.Add(uploadTask);
+                    //string key = $"file{number}_{Guid.NewGuid()}.dat";
+                    //var ran = random.Next(0, 99);
+                    //var content = new StreamContent(new MemoryStream(filesBytes[ran]));
+                    //Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content/*, _cancellationToken.Value*/);
+                    //uploadTasks.Add(uploadTask);
+
+                    uploadTasks.Add(Req(httpClient, number));
                 });
             }
 
@@ -122,37 +128,57 @@ class Program
 
                 if (true)
                 {
-                    var countCompleted = uploadTasks.Count(x => x.IsCompletedSuccessfully);
-                    var countAll = uploadTasks.Count();
+                    //var countCompleted = uploadTasks.Count(x => x.IsCompletedSuccessfully);
+                    //var countAll = uploadTasks.Count();
 
-                    long cfps = 0;
-                    long fps = 0;
+                    long cfps = SuccessRequests / (watch.ElapsedMilliseconds / 1000);
+                    long fps = totalReqests / (watch.ElapsedMilliseconds / 1000);
+                    long ffps = FailedRequests / (watch.ElapsedMilliseconds / 1000);
 
-                    try
-                    {
-                        cfps = countCompleted / (watch.ElapsedMilliseconds / 1000);
-                        fps = countAll / (watch.ElapsedMilliseconds / 1000);
-                    }
-                    catch (Exception)
-                    {
-                    }
+                    //try
+                    //{
+                    //    cfps = countCompleted / (watch.ElapsedMilliseconds / 1000);
+                    //    fps = countAll / (watch.ElapsedMilliseconds / 1000);
+                    //}
+                    //catch (Exception)
+                    //{
+                    //}
                     
 
-                    var json = JsonConvert.SerializeObject(new { fps = fps, cfps = cfps, totalRequests = countAll, totalCompleted = countCompleted });
-                    byte[] msg = System.Text.Encoding.ASCII.GetBytes(json);
+                    //var json = JsonConvert.SerializeObject(new { fps = fps, cfps = cfps, totalRequests = countAll, totalCompleted = countCompleted });
+                    //byte[] msg = System.Text.Encoding.ASCII.GetBytes(json);
 
                     //if (handler != null && handler.Connected)
                     //{
                     //    stream.Write(msg, 0, msg.Length);
                     //}
 
-                    Console.WriteLine($"{watch.ElapsedMilliseconds} ms! {fps} requests per second / {cfps} completed files per second");
+                    Console.WriteLine($"{watch.ElapsedMilliseconds} ms! {fps} requests per second / {cfps} completed files per second / {ffps}");
                 }
             }
             catch (Exception ex)
             {
             }
             
+        }
+    }
+
+    public static async Task Req(HttpClient httpClient, int number)
+    {
+        string key = $"file{number}_{Guid.NewGuid()}.dat";
+        var ran = random.Next(0, 99);
+        var content = new StreamContent(new MemoryStream(filesBytes[ran]));
+        var response = await  httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content);
+
+        Interlocked.Increment(ref totalReqests);
+
+        if(response.IsSuccessStatusCode)
+        {
+            Interlocked.Increment(ref SuccessRequests);
+        }
+        else
+        {
+            Interlocked.Increment(ref FailedRequests);
         }
     }
 

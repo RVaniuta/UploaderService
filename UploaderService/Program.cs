@@ -52,9 +52,9 @@ class Program
 
     public static Random random = new Random();
 
-    public static int totalReqests = 0;
-    public static int SuccessRequests = 0;
-    public static int FailedRequests = 0;
+    public static long totalReqests = 0;
+    public static long SuccessRequests = 0;
+    public static long FailedRequests = 0;
 
     static async Task Main(string[] args)
     {
@@ -131,9 +131,9 @@ class Program
                     //var countCompleted = uploadTasks.Count(x => x.IsCompletedSuccessfully);
                     //var countAll = uploadTasks.Count();
 
-                    long cfps = SuccessRequests / (watch.ElapsedMilliseconds / 1000);
-                    long fps = totalReqests / (watch.ElapsedMilliseconds / 1000);
-                    long ffps = FailedRequests / (watch.ElapsedMilliseconds / 1000);
+                    long cfps = Interlocked.Read(ref SuccessRequests) / (watch.ElapsedMilliseconds / 1000);
+                    long fps = Interlocked.Read(ref totalReqests) / (watch.ElapsedMilliseconds / 1000);
+                    long ffps = Interlocked.Read(ref FailedRequests) / (watch.ElapsedMilliseconds / 1000);
 
                     //try
                     //{

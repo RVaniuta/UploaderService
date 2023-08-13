@@ -168,9 +168,8 @@ class Program
         string key = $"file{number}_{Guid.NewGuid()}.dat";
         var ran = random.Next(0, 99);
         var content = new StreamContent(new MemoryStream(filesBytes[ran]));
-        var response = await  httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content);
-
         Interlocked.Increment(ref totalReqests);
+        var response = await  httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content);
 
         if(response.IsSuccessStatusCode)
         {

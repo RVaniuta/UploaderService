@@ -72,7 +72,7 @@ class Program
             if (_cancellationToken != null && !_cancellationToken.Value.IsCancellationRequested)
             {
                 Parallel.ForEach(
-                Enumerable.Range(0, numFiles / 10),
+                Enumerable.Range(0, numFiles),
                 new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _cancellationToken.Value },
                 number =>
                 {
@@ -86,10 +86,10 @@ class Program
 
             watch2.Stop();
 
-            if (100 - watch2.ElapsedMilliseconds > 0)
-            {
-                await Task.Delay(100 - (int)watch2.ElapsedMilliseconds);
-            }
+            //if (100 - watch2.ElapsedMilliseconds > 0)
+            //{
+            //    await Task.Delay(100 - (int)watch2.ElapsedMilliseconds);
+            //}
         }
     }
 

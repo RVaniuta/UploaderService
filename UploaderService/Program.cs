@@ -78,7 +78,7 @@ class Program
             var watch2 = new System.Diagnostics.Stopwatch();
             watch2.Start();
 
-            if (_cancellationToken != null && !_cancellationToken.Value.IsCancellationRequested)
+            if (true) //_cancellationToken != null && !_cancellationToken.Value.IsCancellationRequested
             {
                 Parallel.ForEach(
                 Enumerable.Range(0, numFiles),
@@ -115,8 +115,8 @@ class Program
             
             try
             {
-                TcpClient handler = await listener.AcceptTcpClientAsync();
-                await using NetworkStream stream = handler.GetStream();
+                //TcpClient handler = await listener.AcceptTcpClientAsync();
+                //await using NetworkStream stream = handler.GetStream();
 
 
                 if (true)
@@ -140,10 +140,10 @@ class Program
                     var json = JsonConvert.SerializeObject(new { fps = fps, cfps = cfps, totalRequests = countAll, totalCompleted = countCompleted });
                     byte[] msg = System.Text.Encoding.ASCII.GetBytes(json);
 
-                    if (handler != null && handler.Connected)
-                    {
-                        stream.Write(msg, 0, msg.Length);
-                    }
+                    //if (handler != null && handler.Connected)
+                    //{
+                    //    stream.Write(msg, 0, msg.Length);
+                    //}
 
                     Console.WriteLine($"{watch.ElapsedMilliseconds} ms! {fps} requests per second / {cfps} completed files per second");
                 }
@@ -157,6 +157,7 @@ class Program
 
     public static async Task Listener()
     {
+        return;
         var ipEndPoint = new IPEndPoint(IPAddress.Any, 1337);
         TcpListener listener = new(ipEndPoint);
 

@@ -44,7 +44,7 @@ class Program
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
 
-    public static int numFiles = 1000;
+    public static int numFiles = 500;
 
     public static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 
@@ -102,10 +102,10 @@ class Program
 
             watch2.Stop();
 
-            //if (100 - watch2.ElapsedMilliseconds > 0)
-            //{
-            //    await Task.Delay(100 - (int)watch2.ElapsedMilliseconds);
-            //}
+            if (1000 - watch2.ElapsedMilliseconds > 0)
+            {
+                await Task.Delay(1000 - (int)watch2.ElapsedMilliseconds);
+            }
         }
     }
 

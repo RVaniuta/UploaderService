@@ -48,6 +48,10 @@ class Program
 
     public static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 
+    public static List<byte[]> filesBytes = new List<byte[]>();
+
+    public static Random random = new Random();
+
     static async Task Main(string[] args)
     {
         string accessKey = "oDvlANSpdkreqwpo";
@@ -64,6 +68,11 @@ class Program
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", $"TB-PLAIN {accessKey}:{secretKey}");
 
+        for (int i = minFileSize; i <= maxFileSize; i += minFileSize)
+        {
+            filesBytes.Add(new byte[i]);
+        }
+
         while (true)
         {
             var watch2 = new System.Diagnostics.Stopwatch();
@@ -73,12 +82,12 @@ class Program
             {
                 Parallel.ForEach(
                 Enumerable.Range(0, numFiles),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _cancellationToken.Value },
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 20, CancellationToken = _cancellationToken.Value },
                 number =>
                 {
                     string key = $"file{number}_{Guid.NewGuid()}.dat";
-                    byte[] fileBytes = GenerateRandomFile(minFileSize, maxFileSize);
-                    var content = new StreamContent(new MemoryStream(fileBytes));
+                    var ran = random.Next(0, 99);
+                    var content = new StreamContent(new MemoryStream(filesBytes[ran]));
                     Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content, _cancellationToken.Value);
                     uploadTasks.Add(uploadTask);
                 });
@@ -209,7 +218,6 @@ class Program
 
     static byte[] GenerateRandomFile(int minSize, int maxSize)
     {
-        Random random = new Random();
         int fileSize = random.Next(minSize, maxSize + 1);
         byte[] fileBytes = new byte[fileSize];
         random.NextBytes(fileBytes);

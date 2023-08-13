@@ -73,6 +73,7 @@ class Program
             filesBytes.Add(new byte[i]);
         }
 
+        watch.Start();
         while (true)
         {
             var watch2 = new System.Diagnostics.Stopwatch();

@@ -44,7 +44,7 @@ class Program
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
 
-    public static int numFiles = 500;
+    public static int numFiles = 1000;
 
     public static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 
@@ -87,7 +87,7 @@ class Program
             {
                 Parallel.ForEach(
                 Enumerable.Range(0, numFiles),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10/*, CancellationToken = _cancellationToken.Value*/ },
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 5/*, CancellationToken = _cancellationToken.Value*/ },
                 number =>
                 {
                     //string key = $"file{number}_{Guid.NewGuid()}.dat";

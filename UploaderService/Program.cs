@@ -82,13 +82,13 @@ class Program
             {
                 Parallel.ForEach(
                 Enumerable.Range(0, numFiles),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10, CancellationToken = _cancellationToken.Value },
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 10/*, CancellationToken = _cancellationToken.Value*/ },
                 number =>
                 {
                     string key = $"file{number}_{Guid.NewGuid()}.dat";
                     var ran = random.Next(0, 99);
                     var content = new StreamContent(new MemoryStream(filesBytes[ran]));
-                    Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content, _cancellationToken.Value);
+                    Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content/*, _cancellationToken.Value*/);
                     uploadTasks.Add(uploadTask);
                 });
             }

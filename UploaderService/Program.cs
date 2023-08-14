@@ -165,20 +165,29 @@ class Program
 
     public static async Task Req(HttpClient httpClient, int number)
     {
-        string key = $"file{number}_{Guid.NewGuid()}.dat";
-        var ran = random.Next(0, 99);
-        var content = new StreamContent(new MemoryStream(filesBytes[ran]));
-        Interlocked.Increment(ref totalReqests);
-        var response = await  httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content);
+        try
+        {
+            string key = $"file{number}_{Guid.NewGuid()}.dat";
+            var ran = random.Next(0, 99);
+            var content = new StreamContent(new MemoryStream(filesBytes[ran]));
+            Interlocked.Increment(ref totalReqests);
+            var response = await httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content);
 
-        if(response.IsSuccessStatusCode)
-        {
-            Interlocked.Increment(ref SuccessRequests);
+            if (response.IsSuccessStatusCode)
+            {
+                Interlocked.Increment(ref SuccessRequests);
+            }
+            else
+            {
+                Interlocked.Increment(ref FailedRequests);
+            }
         }
-        else
+        catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
             Interlocked.Increment(ref FailedRequests);
         }
+        
     }
 
     public static async Task Listener()

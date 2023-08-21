@@ -38,13 +38,13 @@ class Program
     {
         PooledConnectionLifetime = TimeSpan.FromMinutes(60),
         PooledConnectionIdleTimeout = TimeSpan.FromMinutes(20),
-        MaxConnectionsPerServer = 10000,
+        MaxConnectionsPerServer = 500,
         EnableMultipleHttp2Connections = true
         
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
 
-    public static int numFiles = 1000;
+    public static int numFiles = 1500;
 
     public static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 

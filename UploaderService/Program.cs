@@ -44,7 +44,7 @@ class Program
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
 
-    public static int numFiles = 5000;
+    public static int numFiles = 4000;
 
     public static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 

@@ -58,6 +58,15 @@ class Program
 
     static async Task Main(string[] args)
     {
+        var ips = Dns.GetHostEntry("s3.tebi.io");
+
+        foreach (var ip in ips.AddressList)
+        {
+            Console.WriteLine(ip.ToString());
+        }
+
+        Console.ReadLine();
+
         string accessKey = "oDvlANSpdkreqwpo";
         string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
         int minFileSize = 1024; // 1KB

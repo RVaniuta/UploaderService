@@ -38,7 +38,7 @@ class Program
     {
         PooledConnectionLifetime = TimeSpan.FromMinutes(60),
         PooledConnectionIdleTimeout = TimeSpan.FromMinutes(20),
-        MaxConnectionsPerServer = 500,
+        MaxConnectionsPerServer = 1000,
         EnableMultipleHttp2Connections = true
         
     };

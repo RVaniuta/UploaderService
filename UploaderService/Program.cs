@@ -44,7 +44,7 @@ class Program
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
 
-    public static int numFiles = 4000;
+    public static int numFiles = 3000;
 
     public static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 
@@ -58,7 +58,12 @@ class Program
 
     static async Task Main(string[] args)
     {
-        var ips = Dns.GetHostEntry("s3.tebi.io");
+        if (args.Length > 0)
+        {
+            numFiles = int.Parse(args[0]);
+        }
+
+        var ips = Dns.GetHostEntry("dev2.s3.tebi.io");
 
         foreach (var ip in ips.AddressList)
         {

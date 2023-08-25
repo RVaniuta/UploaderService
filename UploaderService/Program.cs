@@ -96,6 +96,10 @@ class Program
                     //Task uploadTask = httpClient.PutAsync($"https://{bucketName}.s3.tebi.io/{key}", content/*, _cancellationToken.Value*/);
                     //uploadTasks.Add(uploadTask);
 
+                    //string key = $"file{number}_{Guid.NewGuid()}.dat";
+                    //var ran = random.Next(0, 99);
+                    //uploadTasks.Add(File.WriteAllBytesAsync($@"C:\DEV\Files\{key}", filesBytes[ran]));
+
                     uploadTasks.Add(Req(httpClient, number));
                 });
             }
@@ -131,9 +135,13 @@ class Program
                     //var countCompleted = uploadTasks.Count(x => x.IsCompletedSuccessfully);
                     //var countAll = uploadTasks.Count();
 
-                    long cfps = Interlocked.Read(ref SuccessRequests) / (watch.ElapsedMilliseconds / 1000);
-                    long fps = Interlocked.Read(ref totalReqests) / (watch.ElapsedMilliseconds / 1000);
-                    long ffps = Interlocked.Read(ref FailedRequests) / (watch.ElapsedMilliseconds / 1000);
+                    var ttr = Interlocked.Read(ref totalReqests);
+                    var ttsr = Interlocked.Read(ref SuccessRequests);
+                    var ttfr = Interlocked.Read(ref FailedRequests);
+
+                    long cfps = ttsr / (watch.ElapsedMilliseconds / 1000);
+                    long fps = ttr / (watch.ElapsedMilliseconds / 1000);
+                    long ffps = ttfr / (watch.ElapsedMilliseconds / 1000);
 
                     //try
                     //{
@@ -153,7 +161,7 @@ class Program
                     //    stream.Write(msg, 0, msg.Length);
                     //}
 
-                    Console.WriteLine($"{watch.ElapsedMilliseconds} ms! {fps} requests per second / {cfps} completed files per second / {ffps}");
+                    Console.WriteLine($"{watch.ElapsedMilliseconds} ms! {fps} requests per second / {cfps} completed files per second / errors {ffps} / total req {ttr} / total success {ttsr} / total failed {ffps}");
                 }
             }
             catch (Exception ex)

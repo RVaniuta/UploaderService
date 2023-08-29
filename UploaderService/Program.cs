@@ -185,11 +185,18 @@ class Program
         }
     }
 
+    public static string RandomString(int length)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
     public static async Task Req(HttpClient httpClient, int number)
     {
         try
         {
-            string key = $"file{number}_{Guid.NewGuid()}.dat";
+            string key = $"{RandomString(3)}file{number}_{Guid.NewGuid()}.dat";
             var ran = random.Next(0, 99);
             var content = new StreamContent(new MemoryStream(filesBytes[ran]));
             Interlocked.Increment(ref totalReqests);

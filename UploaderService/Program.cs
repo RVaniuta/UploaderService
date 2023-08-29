@@ -56,11 +56,16 @@ class Program
     public static long SuccessRequests = 0;
     public static long FailedRequests = 0;
 
+    public static bool RandomName = false;
+
     static async Task Main(string[] args)
     {
         if (args.Length > 0)
         {
             numFiles = int.Parse(args[0]);
+
+            if (args[1] == "R")
+                RandomName = true;
         }
 
         var ips = Dns.GetHostEntry("dev2.s3.tebi.io");
@@ -196,7 +201,12 @@ class Program
     {
         try
         {
-            string key = $"{RandomString(3)}file{number}_{Guid.NewGuid()}.dat";
+            var prefix = "";
+
+            if (RandomName)
+                prefix = RandomString(3);
+
+            string key = $"{prefix}file{number}_{Guid.NewGuid()}.dat";
             var ran = random.Next(0, 99);
             var content = new StreamContent(new MemoryStream(filesBytes[ran]));
             Interlocked.Increment(ref totalReqests);

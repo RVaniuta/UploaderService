@@ -189,7 +189,7 @@ class Program
     {
         try
         {
-            string key = $"{Guid.NewGuid()}.dat";
+            string key = $"file{number}_{Guid.NewGuid()}.dat";
             var ran = random.Next(0, 99);
             var content = new StreamContent(new MemoryStream(filesBytes[ran]));
             Interlocked.Increment(ref totalReqests);

@@ -90,6 +90,7 @@ class Program
 
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Authorization", $"TB-PLAIN {accessKey}:{secretKey}");
+        httpClient.Timeout = TimeSpan.FromSeconds(10);
 
         for (int i = minFileSize; i <= maxFileSize; i += minFileSize)
         {

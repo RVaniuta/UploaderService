@@ -44,7 +44,7 @@ class Program
     };
     public static HttpClient httpClient = new HttpClient(socketsHttpHandler);
 
-    public static int numFiles = 3000;
+    public static int numFiles = 200;
 
     public static System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 
@@ -118,9 +118,9 @@ class Program
 
                     //string key = $"file{number}_{Guid.NewGuid()}.dat";
                     //var ran = random.Next(0, 99);
-                    //uploadTasks.Add(File.WriteAllBytesAsync($@"C:\DEV\Files\{key}", filesBytes[ran]));
+                    uploadTasks.Add(WriteFile(number));
 
-                    uploadTasks.Add(Req(httpClient, number));
+                    //uploadTasks.Add(Req(httpClient, number));
                 });
             }
 
@@ -228,6 +228,30 @@ class Program
             Interlocked.Increment(ref FailedRequests);
         }
         
+    }
+
+    public static async Task WriteFile(int number)
+    {
+        try
+        {
+            var prefix = "";
+
+            if (RandomName)
+                prefix = RandomString(3);
+
+            string key = $"{prefix}file{number}_{Guid.NewGuid()}.dat";
+            var ran = random.Next(0, 99);
+            var content = new StreamContent(new MemoryStream(filesBytes[ran]));
+            Interlocked.Increment(ref totalReqests);
+            await File.WriteAllBytesAsync($@"/home/files/{key}", filesBytes[ran]);
+            Interlocked.Increment(ref SuccessRequests);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Interlocked.Increment(ref FailedRequests);
+        }
+
     }
 
     public static async Task Listener()

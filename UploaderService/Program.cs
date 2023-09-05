@@ -248,7 +248,9 @@ class Program
             Interlocked.Increment(ref totalReqests);
             var response = await httpClient.PutAsync($"http://node-de-30.tebi.io:8002/?action=save_file2&path=0/{key}", content);
 
-            if (response.IsSuccessStatusCode)
+            var result = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode && result.Contains("\"msg\": \"ok\""))
             {
                 Interlocked.Increment(ref SuccessRequests);
             }

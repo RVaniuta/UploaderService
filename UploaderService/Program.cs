@@ -20,6 +20,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -243,7 +244,18 @@ class Program
             var ran = random.Next(0, 99);
             var content = new StreamContent(new MemoryStream(filesBytes[ran]));
             Interlocked.Increment(ref totalReqests);
-            await File.WriteAllBytesAsync($@"/home/files/{key}", filesBytes[ran]);
+
+            var fb = filesBytes[ran];
+
+            Memory<byte> userBuffer = new Memory<byte>(fb);
+
+            using (FileStream fileStream = new FileStream($@"/home/files/{key}", FileMode.Create, FileAccess.Write,
+                FileShare.Read, 1, FileOptions.None))
+            {
+                await fileStream.WriteAsync(userBuffer);
+            }
+
+            //await File.WriteAllBytesAsync($@"/home/files/{key}", filesBytes[ran]);
             Interlocked.Increment(ref SuccessRequests);
         }
         catch (Exception ex)

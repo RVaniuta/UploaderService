@@ -119,9 +119,11 @@ class Program
 
                     //string key = $"file{number}_{Guid.NewGuid()}.dat";
                     //var ran = random.Next(0, 99);
-                    uploadTasks.Add(WriteFile(number));
+                    //uploadTasks.Add(WriteFile(number));
 
                     //uploadTasks.Add(Req(httpClient, number));
+
+                    uploadTasks.Add(ReqDirect(httpClient, number));
                 });
             }
 
@@ -229,6 +231,38 @@ class Program
             Interlocked.Increment(ref FailedRequests);
         }
         
+    }
+
+    public static async Task ReqDirect(HttpClient httpClient, int number)
+    {
+        try
+        {
+            var prefix = "";
+
+            if (RandomName)
+                prefix = RandomString(3);
+
+            string key = $"{prefix}file{number}_{Guid.NewGuid()}.dat";
+            var ran = random.Next(0, 99);
+            var content = new StreamContent(new MemoryStream(filesBytes[ran]));
+            Interlocked.Increment(ref totalReqests);
+            var response = await httpClient.PutAsync($"http://node-de-30.tebi.io:8002/?action=save_file2&path=0/{key}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Interlocked.Increment(ref SuccessRequests);
+            }
+            else
+            {
+                Interlocked.Increment(ref FailedRequests);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Interlocked.Increment(ref FailedRequests);
+        }
+
     }
 
     public static async Task WriteFile(int number)

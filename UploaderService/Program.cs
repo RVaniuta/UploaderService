@@ -69,22 +69,27 @@ class Program
                 RandomName = true;
         }
 
-        var ips = Dns.GetHostEntry("dev2.s3.tebi.io");
+        //var ips = Dns.GetHostEntry("dev2.s3.tebi.io");
 
-        foreach (var ip in ips.AddressList)
-        {
-            Console.WriteLine(ip.ToString());
-        }
+        //foreach (var ip in ips.AddressList)
+        //{
+        //    Console.WriteLine(ip.ToString());
+        //}
 
-        Console.ReadLine();
+        //Console.ReadLine();
 
-        string accessKey = "oDvlANSpdkreqwpo";
-        string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
+        //string accessKey = "oDvlANSpdkreqwpo";
+        //string secretKey = "f5Zhdxyys8fO2ye8mvjBrnm3skgts3gtgaImIseX";
+
+        string accessKey = "N8EORJPRCJR2A67NXKYM";
+        string secretKey = "Cioj2x6o5CaIY94J5751bBnFwzfUNx5h5jCI6ZLy";
+
         int minFileSize = 1024; // 1KB
         int maxFileSize = 102400; // 100KB
 
-        AmazonS3Config cfg = new AmazonS3Config { ServiceURL = "https://s3.tebi.io" };
+        AmazonS3Config cfg = new AmazonS3Config { ServiceURL = "https://ams1.vultrobjects.com" };
         s3Client = new AmazonS3Client(accessKey, secretKey, cfg);
+        TransferUtility fileTransferUtility = new TransferUtility(s3Client);
 
         monitor = Monitor();
         listener = Listener();
@@ -123,7 +128,8 @@ class Program
 
                     //uploadTasks.Add(Req(httpClient, number));
 
-                    uploadTasks.Add(ReqDirect(httpClient, number));
+                    uploadTasks.Add(S3Upload(fileTransferUtility, number));
+                    //uploadTasks.Add(ReqDirect(httpClient, number));
                 });
             }
 
@@ -231,6 +237,29 @@ class Program
             Interlocked.Increment(ref FailedRequests);
         }
         
+    }
+
+    public static async Task S3Upload(TransferUtility transferUtility, int number)
+    {
+        try
+        {
+            var prefix = "";
+
+            if (RandomName)
+                prefix = RandomString(3);
+
+            string key = $"{prefix}file{number}_{Guid.NewGuid()}.dat";
+            var ran = random.Next(0, 99);
+            Interlocked.Increment(ref totalReqests);
+            await transferUtility.UploadAsync(new MemoryStream(filesBytes[ran]), "test2509", key);
+            Interlocked.Increment(ref SuccessRequests);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Interlocked.Increment(ref FailedRequests);
+        }
+
     }
 
     public static async Task ReqDirect(HttpClient httpClient, int number)
